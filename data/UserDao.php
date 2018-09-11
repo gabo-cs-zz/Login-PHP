@@ -21,23 +21,24 @@ class UserDao extends Connection {
 * @return   boolean
 */
   public static function login($user){
-    $query = "SELECT
-    id, name, user, email, privilege, date_record
-    FROM users WHERE user = :user AND password = :password";
+    $query = "select * from users where user = :user and password = :password";
 
     self::getConnection();
 
-    $resultado = self::$cnct->prepare($query);
+    $result = self::$cnct->prepare($query);
 
-    $resultado->bindValue(":user", $user->getUser());
-    $resultado->bindValue(":password", $user->getPassword());
+    $result->bindValue(":user", $user->getUser());
+    $result->bindValue(":password", $user->getPassword());
 
-    $resultado->execute();
+    $result->execute();
 
-    if($resultado->rowCount() > 0){
-      return "OK";
+    if($result->rowCount() > 0){
+      $rows = $result->fetch();
+      if($rows["user"] == $user->getUser() && $rows["password"] == $user->getPassword()){
+        return true;
+      }
     }
-    return "false";
+    return false;
 
   }
 
